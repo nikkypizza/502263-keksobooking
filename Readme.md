@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Никита Победоносцев](https://up.htmlacademy.ru/javascript/12/user/502263).
-* Наставник: `Неизвестно`.
+* Наставник: [Дмитрий Харин](https://htmlacademy.ru/profile/dihar).
 
 ---
 
