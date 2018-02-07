@@ -61,8 +61,8 @@ var addZero = function (num) {
 
 // Генерирует случайное число от min до max. Если третий параметр = true, то включает max
 var getRandomNumber = function (min, max, includeMax) {
-  includeMax = includeMax ? 1 : 0;
-  return Math.floor(Math.random() * (max - min + includeMax) + min);
+  var addMax = includeMax ? 1 : 0;
+  return Math.floor(Math.random() * (max - min + addMax) + min);
 };
 
 // Возвращает массив значений произвольной длины
@@ -174,11 +174,29 @@ var renderOffer = function (currentOffer) {
   var offerElem = document.querySelector('template').content.querySelector('article.map__card').cloneNode(true);
   var photoList = offerElem.querySelector('.popup__pictures');
 
+
+  var roomPluralName = function () {
+    var roomQuantity = 'комнаты';
+    var roomNumber = currentOffer.offer.rooms;
+    if (roomNumber === 1) {
+      roomQuantity = 'комната';
+    }
+    if (roomNumber > 4) {
+      roomQuantity = 'комнат';
+    }
+    return roomQuantity;
+  };
+
+  var guestPluralName = function () {
+    var guestQuantity = currentOffer.offer.guests === 1 ? guestQuantity = 'гостя' : guestQuantity = 'гостей';
+    return guestQuantity;
+  };
+
   offerElem.querySelector('h3').textContent = currentOffer.offer.title;
   offerElem.querySelector('p small').textContent = currentOffer.offer.address;
   offerElem.querySelector('.popup__price').textContent = currentOffer.offer.price.toLocaleString() + ' ₽/ночь';
   offerElem.querySelector('h4').textContent = LIST_APARTMENT_TYPES[currentOffer.offer.type];
-  offerElem.querySelector('h4 + p').textContent = currentOffer.offer.rooms + ' комнаты для ' + currentOffer.offer.guests + ' гостей';
+  offerElem.querySelector('h4 + p').textContent = currentOffer.offer.rooms + ' ' + roomPluralName() + ' для ' + currentOffer.offer.guests + ' ' + guestPluralName();
   offerElem.querySelector('h4 + p + p').textContent = 'Заезд после ' + currentOffer.offer.checkin + ',' + ' выезд до ' + currentOffer.offer.checkout;
   offerElem.querySelector('ul + p').textContent = currentOffer.offer.description;
   offerElem.querySelector('.popup__avatar').src = currentOffer.author.avatar;
@@ -188,8 +206,9 @@ var renderOffer = function (currentOffer) {
     var photoElement = photoList.querySelector('li').cloneNode(true);
     photoList.appendChild(photoElement);
 
-    photoElement.querySelector('img').style.width = '100px';
-    photoElement.querySelector('img').style.height = '100px';
+    photoElement.querySelector('img').style.width = '65px';
+    photoElement.querySelector('img').style.height = '65px';
+    photoElement.querySelector('img').style.padding = '0 3px 0 0';
     photoElement.querySelector('img').src = getRandomElem(ALL_PHOTOS);
   }
 
