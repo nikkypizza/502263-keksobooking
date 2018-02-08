@@ -97,8 +97,8 @@ function getShuffleArray(array) {
   return array;
 }
 
-// Создает массив случайных чисел от
-var randomNumberArray = function () {
+// Создает массив случайных чисел от 1 до 8
+var getRandomNumberArray = function () {
   var arr = [];
   for (var i = 0; i < 8; i++) {
     var random = getRandomNumber(1, 8, true);
@@ -120,7 +120,7 @@ var getOffersArray = function (quantity) {
 
     currentOffer = {
       author: {
-        avatar: getAvatarUrl(randomNumberArray()[i])
+        avatar: getAvatarUrl(getRandomNumberArray()[i])
       },
       offer: {
         title: shuffleTitles[i],
@@ -211,7 +211,7 @@ var renderOffer = function (currentOffer) {
   var shuffledPhotos = getShuffleArray(ALL_PHOTOS);
 
   // Склоняет слово "комната" в зависимости от количества
-  var roomPluralName = function () {
+  var createRoomPluralName = function () {
     var roomQuantity = 'комнаты';
     var roomNumber = currentOffer.offer.rooms;
     if (roomNumber === 1) {
@@ -224,7 +224,7 @@ var renderOffer = function (currentOffer) {
   };
 
   // Склоняет слово "гость" в зависимости от количества
-  var guestPluralName = function () {
+  var createGuestPluralName = function () {
     var guestQuantity;
     guestQuantity = currentOffer.offer.guests === 1 ? 'гостя' : 'гостей';
     return guestQuantity;
@@ -234,7 +234,7 @@ var renderOffer = function (currentOffer) {
   offerElem.querySelector('p small').textContent = currentOffer.offer.address;
   offerElem.querySelector('.popup__price').textContent = currentOffer.offer.price.toLocaleString() + ' ₽/ночь';
   offerElem.querySelector('h4').textContent = LIST_APARTMENT_TYPES[currentOffer.offer.type];
-  offerElem.querySelector('h4 + p').textContent = currentOffer.offer.rooms + ' ' + roomPluralName() + ' для ' + currentOffer.offer.guests + ' ' + guestPluralName();
+  offerElem.querySelector('h4 + p').textContent = currentOffer.offer.rooms + ' ' + createRoomPluralName() + ' для ' + currentOffer.offer.guests + ' ' + createGuestPluralName();
   offerElem.querySelector('h4 + p + p').textContent = 'Заезд после ' + currentOffer.offer.checkin + ',' + ' выезд до ' + currentOffer.offer.checkout;
   offerElem.querySelector('ul + p').textContent = currentOffer.offer.description;
   offerElem.querySelector('.popup__avatar').src = currentOffer.author.avatar;
