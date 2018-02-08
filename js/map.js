@@ -76,11 +76,43 @@ var getRandomElem = function (srcArray) {
   return srcArray[getRandomNumber(0, srcArray.length)];
 };
 
+/* Возвращает перемешаный массив
+   Тасование Фишера — Йетса      */
+function getShuffleArray(array) {
+  var m = array.length;
+  var t;
+  var i;
+
+  // Пока еще остаются элементы для тасования...
+  while (m) {
+
+    // Берем остающийся элемент...
+    i = Math.floor(Math.random() * m--);
+
+    // И меняем его местами с текущим элементом
+    t = array[m];
+    array[m] = array[i];
+    array[i] = t;
+  }
+  return array;
+}
+
+// Создает массив случайных чисел от
+var randomNumberArray = function () {
+  var arr = [];
+  for (var i = 0; i < 8; i++) {
+    var random = getRandomNumber(1, 8, true);
+    arr.push(random);
+  }
+  return arr;
+};
+
 
 // Создает массив объявлений
 var getOffersArray = function (quantity) {
   var offersArray = [];
   var currentOffer;
+  var shuffleTitles = getShuffleArray(ALL_TITLES);
 
   for (var i = 0; i < quantity; i += 1) {
     var x = getRandomNumber(300, 900, true);
@@ -88,10 +120,10 @@ var getOffersArray = function (quantity) {
 
     currentOffer = {
       author: {
-        avatar: getAvatarUrl(i + 1)
+        avatar: getAvatarUrl(randomNumberArray()[i])
       },
       offer: {
-        title: getRandomElem(ALL_TITLES),
+        title: shuffleTitles[i],
         address: x + ', ' + y,
         price: getRandomNumber(1000, 1000000, true),
         type: getRandomElem(Object.keys(LIST_APARTMENT_TYPES)),
@@ -106,6 +138,9 @@ var getOffersArray = function (quantity) {
       location: {
         x: x,
         y: y
+      },
+      pin: {
+        avatar: getAvatarUrl(i + 1)
       }
     };
     offersArray.push(currentOffer);
@@ -142,7 +177,7 @@ var renderPins = function (offers) {
   var pinFragment = document.createDocumentFragment();
 
   offers.forEach(function (offer) {
-    pinFragment.appendChild(createPinElem(offer.location, offer.author.avatar));
+    pinFragment.appendChild(createPinElem(offer.location, offer.pin.avatar));
   });
 
   return pinFragment;
@@ -173,8 +208,9 @@ var renderFeaturesElem = function (featuresArray) {
 var renderOffer = function (currentOffer) {
   var offerElem = document.querySelector('template').content.querySelector('article.map__card').cloneNode(true);
   var photoList = offerElem.querySelector('.popup__pictures');
+  var shuffledPhotos = getShuffleArray(ALL_PHOTOS);
 
-
+  // Склоняет слово "комната" в зависимости от количества
   var roomPluralName = function () {
     var roomQuantity = 'комнаты';
     var roomNumber = currentOffer.offer.rooms;
@@ -187,8 +223,10 @@ var renderOffer = function (currentOffer) {
     return roomQuantity;
   };
 
+  // Склоняет слово "гость" в зависимости от количества
   var guestPluralName = function () {
-    var guestQuantity = currentOffer.offer.guests === 1 ? guestQuantity = 'гостя' : guestQuantity = 'гостей';
+    var guestQuantity;
+    guestQuantity = currentOffer.offer.guests === 1 ? 'гостя' : 'гостей';
     return guestQuantity;
   };
 
@@ -209,7 +247,7 @@ var renderOffer = function (currentOffer) {
     photoElement.querySelector('img').style.width = '65px';
     photoElement.querySelector('img').style.height = '65px';
     photoElement.querySelector('img').style.padding = '0 3px 0 0';
-    photoElement.querySelector('img').src = getRandomElem(ALL_PHOTOS);
+    photoElement.querySelector('img').src = shuffledPhotos[i];
   }
 
   return offerElem;
