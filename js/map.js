@@ -271,4 +271,18 @@ var renderMap = function () {
   mapFiltersElem.appendChild(fragment);
 };
 
-renderMap();
+// renderMap();
+
+// ---------
+var mapFiltersFormNode = document.querySelector('.map').querySelector('.map__filters');
+var noticeFormNode = document.querySelector('.notice__form');
+
+// Добавляет или убирает аттрибут disabled нодам формы
+var toggleDisabledOnFormNodes = function (form, isDisabled) {
+  for (var i = 0; i < form.elements.length; i++) {
+    form.elements[i].disabled = isDisabled;
+  }
+};
+
+toggleDisabledOnFormNodes(noticeFormNode, true);
+toggleDisabledOnFormNodes(mapFiltersFormNode, true);
