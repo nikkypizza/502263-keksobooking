@@ -271,9 +271,14 @@ var renderMap = function () {
   mapFiltersElem.appendChild(fragment);
 };
 
-// renderMap();
 
 // ---------
+var KEYCODE_ENTER = 13;
+
+var mapNode = document.querySelector('.map');
+
+var mapPinMainNode = mapNode.querySelector('.map__pin--main');
+
 var mapFiltersFormNode = document.querySelector('.map').querySelector('.map__filters');
 var noticeFormNode = document.querySelector('.notice__form');
 
@@ -286,3 +291,32 @@ var toggleDisabledOnFormNodes = function (form, isDisabled) {
 
 toggleDisabledOnFormNodes(noticeFormNode, true);
 toggleDisabledOnFormNodes(mapFiltersFormNode, true);
+
+
+// Отрисовывает пины, снимает блокировку с элементов форм
+var enableInteractivity = function () {
+  mapNode.classList.remove('map--faded');
+  noticeFormNode.classList.remove('notice__form--disabled');
+
+  toggleDisabledOnFormNodes(noticeFormNode, false);
+  toggleDisabledOnFormNodes(mapFiltersFormNode, false);
+
+  renderMap();
+};
+
+var onUserPinEnterPress = function (event) {
+  if (event.keyCode === KEYCODE_ENTER) {
+    enableInteractivity();
+    mapPinMainNode.removeEventListener('mouseup', onUserPinMouseUp);
+    mapPinMainNode.removeEventListener('keydown', onUserPinEnterPress);
+  }
+};
+
+var onUserPinMouseUp = function () {
+  enableInteractivity();
+  mapPinMainNode.removeEventListener('mouseup', onUserPinMouseUp);
+  mapPinMainNode.removeEventListener('keydown', onUserPinEnterPress);
+};
+
+mapPinMainNode.addEventListener('mouseup', onUserPinMouseUp);
+mapPinMainNode.addEventListener('keydown', onUserPinEnterPress);
