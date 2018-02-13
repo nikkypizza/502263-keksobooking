@@ -59,6 +59,11 @@ var addZero = function (num) {
   return (num < 10 ? '0' : '') + num;
 };
 
+// Делает чило кратным 100. Срежем мелочь от рандомной цены
+function roundTo100(num) {
+  return Math.round(num / 100) * 100;
+}
+
 // Генерирует случайное число от min до max. Если третий параметр = true, то включает max
 var getRandomNumber = function (min, max, includeMax) {
   var addMax = includeMax ? 1 : 0;
@@ -124,8 +129,8 @@ var getOffersArray = function (quantity) {
       },
       offer: {
         title: shuffleTitles[i],
-        address: x + ', ' + y,
-        price: getRandomNumber(1000, 1000000, true),
+        address: 'x:' + x + ', y:' + y,
+        price: roundTo100(getRandomNumber(1000, 1000000, true)),
         type: getRandomElem(Object.keys(LIST_APARTMENT_TYPES)),
         rooms: getRandomNumber(1, 5, true),
         guests: getRandomNumber(1, 10, true),
@@ -276,6 +281,7 @@ var renderMap = function () {
 var KEYCODE_ENTER = 13;
 
 var mapNode = document.querySelector('.map');
+var addressNode = document.getElementById('address');
 
 var mapPinMainNode = mapNode.querySelector('.map__pin--main');
 
@@ -292,15 +298,27 @@ var toggleDisabledOnFormNodes = function (form, isDisabled) {
 toggleDisabledOnFormNodes(noticeFormNode, true);
 toggleDisabledOnFormNodes(mapFiltersFormNode, true);
 
+// Отключает адресную строку
+var disableAddressNode = function () {
+  addressNode.disabled = true;
+  addressNode.setAttribute('style', 'pointer-events:none');
+  addressNode.previousElementSibling.setAttribute('style', 'pointer-events:none');
+};
+
+// Добавляет координаты main пина в адресную строку. К offsetTop прибавляется высота картинки и высота острого конца( = 22). Вынесено за функцию, ибо по ТЗ должны быть видны при любом состоянии страницы
+addressNode.setAttribute('value', 'x:' + (mapPinMainNode.offsetLeft + PIN_X) + ', y:' + (mapPinMainNode.offsetTop + PIN_Y + 22));
+
 
 // Отрисовывает пины, снимает блокировку с элементов форм
 var enableInteractivity = function () {
   mapNode.classList.remove('map--faded');
   noticeFormNode.classList.remove('notice__form--disabled');
+  mapPinMainNode.setAttribute('style', 'z-index: 10');
 
   toggleDisabledOnFormNodes(noticeFormNode, false);
   toggleDisabledOnFormNodes(mapFiltersFormNode, false);
 
+  disableAddressNode();
   renderMap();
 };
 
