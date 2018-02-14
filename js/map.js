@@ -165,7 +165,7 @@ var PIN_X = pinImgElem.getAttribute('width') / 2;
 var PIN_Y = parseFloat(pinImgElem.getAttribute('height'));
 
 // Объявление фрагмента пина
-var createPinElem = function (coordinates, avatar) {
+var createPinElem = function (coordinates, avatar, dataIndex) {
 
   var pinElem = pinTemplate.cloneNode(true);
   pinElem.querySelector('img').src = avatar;
@@ -173,6 +173,7 @@ var createPinElem = function (coordinates, avatar) {
   pinElem.style.left = coordinates.x - PIN_X + 'px';
   pinElem.style.top = coordinates.y - PIN_Y + 'px';
   pinElem.classList.add('map__pin');
+  pinElem.dataset.offer = dataIndex;
 
   return pinElem;
 };
@@ -181,8 +182,8 @@ var createPinElem = function (coordinates, avatar) {
 var renderPins = function (offers) {
   var pinFragment = document.createDocumentFragment();
 
-  offers.forEach(function (offer) {
-    pinFragment.appendChild(createPinElem(offer.location, offer.pin.avatar));
+  offers.forEach(function (offer, index) {
+    pinFragment.appendChild(createPinElem(offer.location, offer.pin.avatar, index));
   });
 
   return pinFragment;
@@ -262,7 +263,6 @@ var renderOffer = function (currentOffer) {
 
 var renderMap = function () {
   var mapElem = document.querySelector('.map');
-  var mapPinsElem = mapElem.querySelector('.map__pins');
   mapElem.classList.remove('map--faded');
 
   var fragment = document.createDocumentFragment();
@@ -271,19 +271,22 @@ var renderMap = function () {
   var offerElem = renderOffer(CURRENT_OFFER);
 
   offerElem.querySelector('.popup__features').appendChild(renderFeaturesElem(CURRENT_OFFER.offer.features));
-  mapPinsElem.appendChild(renderPins(offersArray));
+  mapPinsNode.appendChild(renderPins(offersArray));
   fragment.appendChild(offerElem);
   mapFiltersElem.appendChild(fragment);
 };
 
 
 // ---------
+var KEYCODE_ESC = 27;
 var KEYCODE_ENTER = 13;
+var KEYCODE_SPACE = 32;
 
 var mapNode = document.querySelector('.map');
 var addressNode = document.getElementById('address');
 
 var mapPinMainNode = mapNode.querySelector('.map__pin--main');
+var mapPinsNode = document.querySelector('.map__pins');
 
 var mapFiltersFormNode = document.querySelector('.map').querySelector('.map__filters');
 var noticeFormNode = document.querySelector('.notice__form');
@@ -298,16 +301,33 @@ var toggleDisabledOnFormNodes = function (form, isDisabled) {
 toggleDisabledOnFormNodes(noticeFormNode, true);
 toggleDisabledOnFormNodes(mapFiltersFormNode, true);
 
-// Отключает адресную строку
-var disableAddressNode = function () {
-  addressNode.disabled = true;
-  addressNode.setAttribute('style', 'pointer-events:none');
-  addressNode.previousElementSibling.setAttribute('style', 'pointer-events:none');
-};
+// Отключает все поля формы по умолчанию
+noticeFormNode.setAttribute('style', 'pointer-events:none');
 
-// Добавляет координаты main пина в адресную строку. К offsetTop прибавляется высота картинки и высота острого конца( = 22). Вынесено за функцию, ибо по ТЗ должны быть видны при любом состоянии страницы
+// Добавляет координаты main пина в адресную строку
 addressNode.setAttribute('value', 'x:' + (mapPinMainNode.offsetLeft + PIN_X) + ', y:' + (mapPinMainNode.offsetTop + PIN_Y + 22));
 
+
+var closePopup = function () {
+  var popupElem = document.querySelector('.map__card');
+  popupElem.classList.add('hidden');
+};
+
+var onPopupEscPress = function (event) {
+  if (event.keyCode === KEYCODE_ESC) {
+    closePopup();
+  }
+};
+
+// Вешает закрывателей на ноду попапа
+var addPopupCloseHandlers = function () {
+  var popupCloseElem = document.querySelector('.popup__close');
+
+  popupCloseElem.addEventListener('click', function () {
+    closePopup();
+  });
+  document.addEventListener('keydown', onPopupEscPress);
+};
 
 // Отрисовывает пины, снимает блокировку с элементов форм
 var enableInteractivity = function () {
@@ -317,13 +337,19 @@ var enableInteractivity = function () {
 
   toggleDisabledOnFormNodes(noticeFormNode, false);
   toggleDisabledOnFormNodes(mapFiltersFormNode, false);
+  noticeFormNode.removeAttribute('style');
 
-  disableAddressNode();
+  // Оставляет поле адреса функционально и визуально неактивным
+  addressNode.disabled = true;
+  addressNode.setAttribute('style', 'pointer-events:none');
+  addressNode.previousElementSibling.setAttribute('style', 'pointer-events:none');
+
   renderMap();
+  addPopupCloseHandlers();
 };
 
 var onUserPinEnterPress = function (event) {
-  if (event.keyCode === KEYCODE_ENTER) {
+  if (event.keyCode === KEYCODE_ENTER || event.keyCode === KEYCODE_SPACE) {
     enableInteractivity();
     mapPinMainNode.removeEventListener('mouseup', onUserPinMouseUp);
     mapPinMainNode.removeEventListener('keydown', onUserPinEnterPress);
@@ -338,3 +364,53 @@ var onUserPinMouseUp = function () {
 
 mapPinMainNode.addEventListener('mouseup', onUserPinMouseUp);
 mapPinMainNode.addEventListener('keydown', onUserPinEnterPress);
+
+
+// Матчит дата-аттрибут пина с индексом соответствующего пину объявления
+var getClickedPinOffer = function (eventTarget) {
+  var offerIndex = parseFloat(eventTarget.dataset.offer);
+  return offersArray[offerIndex];
+};
+
+// Рендерит объявление с заменой предыдущего (если оно было)
+var renderPopup = function (offer) {
+  var mapFiltersElem = document.querySelector('.map__filters-container');
+
+  var oldOfferElem = mapFiltersElem.querySelector('.map__card');
+  var offerElem = renderOffer(offer);
+
+  if (oldOfferElem) {
+    mapFiltersElem.replaceChild(offerElem, oldOfferElem);
+  } else {
+    mapFiltersElem.appendChild(offerElem);
+  }
+};
+
+
+// Приниммет цель события и элемент, на котором этом событие ловим. Использует всплытие, чтобы поймать нужный элемент и возвращает его.
+
+var findClosestElem = function (target, elem) {
+  while (target.className !== mapPinsNode.className) {
+    if (target.className === elem) {
+      var closestElem = target;
+    }
+    target = target.parentNode;
+  }
+
+  return closestElem;
+};
+
+
+// Клик всплывает до нужной ноды. Когда находит нужную - заменяет попап и вешает на него отслеживание закрытия
+
+var onOfferPinClick = function (event) {
+  var clickedPin = findClosestElem(event.target, 'map__pin');
+
+  if (clickedPin) {
+    renderPopup(getClickedPinOffer(clickedPin));
+    addPopupCloseHandlers();
+  }
+};
+
+
+mapPinsNode.addEventListener('click', onOfferPinClick);
