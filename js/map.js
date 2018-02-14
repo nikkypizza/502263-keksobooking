@@ -1,5 +1,10 @@
 'use strict';
 
+// Константы кнопок
+var KEYCODE_ESC = 27;
+var KEYCODE_ENTER = 14;
+var KEYCODE_SPACE = 32;
+
 // Общее количество предложений
 var OFFERS_COUNT = 8;
 
@@ -103,14 +108,14 @@ function getShuffleArray(array) {
 }
 
 // Создает массив случайных чисел от 1 до 8
-var getRandomNumberArray = function () {
-  var arr = [];
-  for (var i = 0; i < 8; i++) {
-    var random = getRandomNumber(1, 8, true);
-    arr.push(random);
-  }
-  return arr;
-};
+// var getRandomNumberArray = function () {
+//   var arr = [];
+//   for (var i = 0; i < 8; i++) {
+//     var random = getRandomNumber(1, 8, true);
+//     arr.push(random);
+//   }
+//   return arr;
+// };
 
 
 // Создает массив объявлений
@@ -125,7 +130,7 @@ var getOffersArray = function (quantity) {
 
     currentOffer = {
       author: {
-        avatar: getAvatarUrl(getRandomNumberArray()[i])
+        avatar: getAvatarUrl(i + 1)
       },
       offer: {
         title: shuffleTitles[i],
@@ -144,9 +149,6 @@ var getOffersArray = function (quantity) {
         x: x,
         y: y
       },
-      pin: {
-        avatar: getAvatarUrl(i + 1)
-      }
     };
     offersArray.push(currentOffer);
   }
@@ -157,17 +159,17 @@ var getOffersArray = function (quantity) {
 var offersArray = getOffersArray(OFFERS_COUNT);
 var CURRENT_OFFER = offersArray[0];
 
-var pinTemplate = document.querySelector('template').content.querySelector('.map__pin');
-var pinImgElem = pinTemplate.querySelector('img');
+var pinTemplateNode = document.querySelector('template').content.querySelector('.map__pin');
+var pinImgNode = pinTemplateNode.querySelector('img');
 
 // Константы пина
-var PIN_X = pinImgElem.getAttribute('width') / 2;
-var PIN_Y = parseFloat(pinImgElem.getAttribute('height'));
+var PIN_X = pinImgNode.getAttribute('width') / 2;
+var PIN_Y = parseFloat(pinImgNode.getAttribute('height'));
 
 // Объявление фрагмента пина
 var createPinElem = function (coordinates, avatar, dataIndex) {
 
-  var pinElem = pinTemplate.cloneNode(true);
+  var pinElem = pinTemplateNode.cloneNode(true);
   pinElem.querySelector('img').src = avatar;
 
   pinElem.style.left = coordinates.x - PIN_X + 'px';
@@ -183,7 +185,7 @@ var renderPins = function (offers) {
   var pinFragment = document.createDocumentFragment();
 
   offers.forEach(function (offer, index) {
-    pinFragment.appendChild(createPinElem(offer.location, offer.pin.avatar, index));
+    pinFragment.appendChild(createPinElem(offer.location, offer.author.avatar, index));
   });
 
   return pinFragment;
@@ -260,7 +262,6 @@ var renderOffer = function (currentOffer) {
 };
 
 // Отрисовывает карту, включая пины и объявление
-
 var renderMap = function () {
   var mapElem = document.querySelector('.map');
   mapElem.classList.remove('map--faded');
@@ -277,18 +278,13 @@ var renderMap = function () {
 };
 
 
-// ---------
-var KEYCODE_ESC = 27;
-var KEYCODE_ENTER = 13;
-var KEYCODE_SPACE = 32;
-
 var mapNode = document.querySelector('.map');
 var addressNode = document.getElementById('address');
 
 var mapPinMainNode = mapNode.querySelector('.map__pin--main');
 var mapPinsNode = document.querySelector('.map__pins');
-
 var mapFiltersFormNode = document.querySelector('.map').querySelector('.map__filters');
+
 var noticeFormNode = document.querySelector('.notice__form');
 
 // Добавляет или убирает аттрибут disabled нодам формы
@@ -339,8 +335,7 @@ var enableInteractivity = function () {
   toggleDisabledOnFormNodes(mapFiltersFormNode, false);
   noticeFormNode.removeAttribute('style');
 
-  // Оставляет поле адреса функционально и визуально неактивным
-  addressNode.disabled = true;
+  // Оставляет поле адреса визуально неактивным
   addressNode.setAttribute('style', 'pointer-events:none');
   addressNode.previousElementSibling.setAttribute('style', 'pointer-events:none');
 
@@ -348,6 +343,7 @@ var enableInteractivity = function () {
   addPopupCloseHandlers();
 };
 
+// Удаляет обработчик кнопки после того, как он отрабатывает
 var onUserPinEnterPress = function (event) {
   if (event.keyCode === KEYCODE_ENTER || event.keyCode === KEYCODE_SPACE) {
     enableInteractivity();
@@ -356,12 +352,14 @@ var onUserPinEnterPress = function (event) {
   }
 };
 
+// Удаляет обработчик клика после того, как он отрабатывает
 var onUserPinMouseUp = function () {
   enableInteractivity();
   mapPinMainNode.removeEventListener('mouseup', onUserPinMouseUp);
   mapPinMainNode.removeEventListener('keydown', onUserPinEnterPress);
 };
 
+// Добавляет обработчиков на главный пин
 mapPinMainNode.addEventListener('mouseup', onUserPinMouseUp);
 mapPinMainNode.addEventListener('keydown', onUserPinEnterPress);
 
@@ -374,21 +372,20 @@ var getClickedPinOffer = function (eventTarget) {
 
 // Рендерит объявление с заменой предыдущего (если оно было)
 var renderPopup = function (offer) {
-  var mapFiltersElem = document.querySelector('.map__filters-container');
+  var mapFiltersNode = document.querySelector('.map__filters-container');
 
-  var oldOfferElem = mapFiltersElem.querySelector('.map__card');
+  var oldOfferNode = mapFiltersNode.querySelector('.map__card');
   var offerElem = renderOffer(offer);
 
-  if (oldOfferElem) {
-    mapFiltersElem.replaceChild(offerElem, oldOfferElem);
+  if (oldOfferNode) {
+    mapFiltersNode.replaceChild(offerElem, oldOfferNode);
   } else {
-    mapFiltersElem.appendChild(offerElem);
+    mapFiltersNode.appendChild(offerElem);
   }
 };
 
 
 // Приниммет цель события и элемент, на котором этом событие ловим. Использует всплытие, чтобы поймать нужный элемент и возвращает его.
-
 var findClosestElem = function (target, elem) {
   while (target.className !== mapPinsNode.className) {
     if (target.className === elem) {
@@ -402,15 +399,14 @@ var findClosestElem = function (target, elem) {
 
 
 // Клик всплывает до нужной ноды. Когда находит нужную - заменяет попап и вешает на него отслеживание закрытия
-
 var onOfferPinClick = function (event) {
   var clickedPin = findClosestElem(event.target, 'map__pin');
 
   if (clickedPin) {
     renderPopup(getClickedPinOffer(clickedPin));
+    document.querySelector('.map__card').classList.remove('hidden');
     addPopupCloseHandlers();
   }
 };
-
 
 mapPinsNode.addEventListener('click', onOfferPinClick);

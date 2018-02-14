@@ -107,7 +107,7 @@
 
       <fieldset class="form__element form__element--wide">
         <label for="address">Адрес</label>
-        <input id="address" name="address" type="text" tabindex="-1" disabled>
+        <input id="address" name="address" type="text" tabindex="-1" readonly>
       </fieldset>
 
       <fieldset class="form__element">
@@ -219,9 +219,9 @@
 </footer>
 
 <template>
-  <article class="map__card popup">
+  <article class="map__card popup hidden">
     <img src="img/avatars/user01.png" class="popup__avatar" width="70" height="70">
-    <button class="popup__close">Закрыть</button>
+    <button class="popup__close" tabindex="1">Закрыть</button>
     <h3>Уютное гнездышко для молодоженов</h3>
     <p><small>102-0082 Tōkyō-to, Chiyoda-ku, Ichibanchō, 14−3</small></p>
     <p class="popup__price">5200&#x20bd;/ночь</p>
