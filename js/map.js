@@ -37,14 +37,14 @@ var LIST_CHECK_OUT = [
   '14:00'
 ];
 
-// массив с типом жилья
+// Массив с типом жилья
 var LIST_APARTMENT_TYPES = {
   flat: 'Квартира',
   bungalo: 'Бунгало',
   house: 'Дом'
 };
 
-// массив с удобствами
+// Массив с удобствами
 var FEATURES = [
   'wifi',
   'dishwasher',
@@ -95,10 +95,8 @@ function getShuffleArray(array) {
 
   // Пока еще остаются элементы для тасования...
   while (m) {
-
     // Берем остающийся элемент...
     i = Math.floor(Math.random() * m--);
-
     // И меняем его местами с текущим элементом
     t = array[m];
     array[m] = array[i];
@@ -106,17 +104,6 @@ function getShuffleArray(array) {
   }
   return array;
 }
-
-// Создает массив случайных чисел от 1 до 8
-// var getRandomNumberArray = function () {
-//   var arr = [];
-//   for (var i = 0; i < 8; i++) {
-//     var random = getRandomNumber(1, 8, true);
-//     arr.push(random);
-//   }
-//   return arr;
-// };
-
 
 // Создает массив объявлений
 var getOffersArray = function (quantity) {
@@ -162,23 +149,23 @@ var CURRENT_OFFER = offersArray[0];
 var pinTemplateNode = document.querySelector('template').content.querySelector('.map__pin');
 var pinImgNode = pinTemplateNode.querySelector('img');
 
-// Константы пина
-var PIN_X = pinImgNode.getAttribute('width') / 2;
-var PIN_Y = parseFloat(pinImgNode.getAttribute('height'));
-
 // Объявление фрагмента пина
 var createPinElem = function (coordinates, avatar, dataIndex) {
 
   var pinElem = pinTemplateNode.cloneNode(true);
   pinElem.querySelector('img').src = avatar;
 
-  pinElem.style.left = coordinates.x - PIN_X + 'px';
-  pinElem.style.top = coordinates.y - PIN_Y + 'px';
+  pinElem.style.left = coordinates.x - PIN_WIDTH + 'px';
+  pinElem.style.top = coordinates.y - PIN_HEIGHT + 'px';
   pinElem.classList.add('map__pin');
   pinElem.dataset.offer = dataIndex;
 
   return pinElem;
 };
+
+// Константы пина
+var PIN_WIDTH = pinImgNode.getAttribute('width');
+var PIN_HEIGHT = parseFloat(pinImgNode.getAttribute('height'));
 
 // Отрисовка фрагмента пина
 var renderPins = function (offers) {
@@ -216,26 +203,26 @@ var renderFeaturesElem = function (featuresArray) {
 var renderOffer = function (currentOffer) {
   var offerElem = document.querySelector('template').content.querySelector('article.map__card').cloneNode(true);
   var photoList = offerElem.querySelector('.popup__pictures');
-  var shuffledPhotos = getShuffleArray(ALL_PHOTOS);
+  var shuffledPhotos = getShuffleArray(currentOffer.offer.photos);
 
   // Склоняет слово "комната" в зависимости от количества
   var createRoomPluralName = function () {
-    var roomQuantity = 'комнаты';
+    var roomNoun = 'комнаты';
     var roomNumber = currentOffer.offer.rooms;
     if (roomNumber === 1) {
-      roomQuantity = 'комната';
+      roomNoun = 'комната';
     }
     if (roomNumber > 4) {
-      roomQuantity = 'комнат';
+      roomNoun = 'комнат';
     }
-    return roomQuantity;
+    return roomNoun;
   };
 
   // Склоняет слово "гость" в зависимости от количества
   var createGuestPluralName = function () {
-    var guestQuantity;
-    guestQuantity = currentOffer.offer.guests === 1 ? 'гостя' : 'гостей';
-    return guestQuantity;
+    var guestNoun;
+    guestNoun = currentOffer.offer.guests === 1 ? 'гостя' : 'гостей';
+    return guestNoun;
   };
 
   offerElem.querySelector('h3').textContent = currentOffer.offer.title;
@@ -277,10 +264,9 @@ var renderMap = function () {
   mapFiltersElem.appendChild(fragment);
 };
 
-
 var mapNode = document.querySelector('.map');
 var addressNode = document.getElementById('address');
-
+var popupNode = document.querySelector('.map__card');
 var mapPinMainNode = mapNode.querySelector('.map__pin--main');
 var mapPinsNode = document.querySelector('.map__pins');
 var mapFiltersFormNode = document.querySelector('.map').querySelector('.map__filters');
@@ -301,12 +287,11 @@ toggleDisabledOnFormNodes(mapFiltersFormNode, true);
 noticeFormNode.setAttribute('style', 'pointer-events:none');
 
 // Добавляет координаты main пина в адресную строку
-addressNode.setAttribute('value', 'x:' + (mapPinMainNode.offsetLeft + PIN_X) + ', y:' + (mapPinMainNode.offsetTop + PIN_Y + 22));
+addressNode.setAttribute('value', 'x:' + (mapPinMainNode.offsetLeft + PIN_WIDTH / 2) + ', y:' + (mapPinMainNode.offsetTop + PIN_HEIGHT + 22));
 
 
 var closePopup = function () {
-  var popupElem = document.querySelector('.map__card');
-  popupElem.classList.add('hidden');
+  popupNode.classList.add('hidden');
 };
 
 var onPopupEscPress = function (event) {
