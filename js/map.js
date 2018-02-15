@@ -345,7 +345,7 @@ var enableInteractivity = function () {
 
 // Удаляет обработчик кнопки после того, как он отрабатывает
 var onUserPinEnterPress = function (event) {
-  if (event.keyCode === KEYCODE_ENTER || event.keyCode === KEYCODE_SPACE) {
+  if (event.keyCode === KEYCODE_ENTER || KEYCODE_SPACE) {
     enableInteractivity();
     mapPinMainNode.removeEventListener('mouseup', onUserPinMouseUp);
     mapPinMainNode.removeEventListener('keydown', onUserPinEnterPress);
