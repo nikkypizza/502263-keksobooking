@@ -266,7 +266,6 @@ var renderMap = function () {
 
 var mapNode = document.querySelector('.map');
 var addressNode = document.getElementById('address');
-var popupNode = document.querySelector('.map__card');
 var mapPinMainNode = mapNode.querySelector('.map__pin--main');
 var mapPinsNode = document.querySelector('.map__pins');
 var mapFiltersFormNode = document.querySelector('.map').querySelector('.map__filters');
@@ -291,6 +290,7 @@ addressNode.setAttribute('value', 'x:' + (mapPinMainNode.offsetLeft + PIN_WIDTH 
 
 
 var closePopup = function () {
+  var popupNode = document.querySelector('.map__card');
   popupNode.classList.add('hidden');
 };
 
