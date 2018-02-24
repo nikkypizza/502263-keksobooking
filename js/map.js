@@ -2,7 +2,7 @@
 
 // Константы кнопок
 var KEYCODE_ESC = 27;
-var KEYCODE_ENTER = 14;
+var KEYCODE_ENTER = 13;
 var KEYCODE_SPACE = 32;
 
 // Общее количество предложений
@@ -273,20 +273,22 @@ var mapFiltersFormNode = document.querySelector('.map').querySelector('.map__fil
 var noticeFormNode = document.querySelector('.notice__form');
 
 // Добавляет или убирает аттрибут disabled нодам формы
-var toggleDisabledOnFormNodes = function (form, isDisabled) {
-  for (var i = 0; i < form.elements.length; i++) {
-    form.elements[i].disabled = isDisabled;
-  }
+var toggleDisabledOnFormNodes = function (formElementNodes, isDisabled) {
+  var elementNodes = Array.prototype.slice.call(formElementNodes);
+
+  elementNodes.forEach(function (elementNode) {
+    elementNode.disabled = isDisabled;
+  });
 };
 
 toggleDisabledOnFormNodes(noticeFormNode, true);
 toggleDisabledOnFormNodes(mapFiltersFormNode, true);
 
 // Отключает все поля формы по умолчанию
-noticeFormNode.setAttribute('style', 'pointer-events:none');
+noticeFormNode.style = 'pointer-events:none';
 
 // Добавляет координаты main пина в адресную строку
-addressNode.setAttribute('value', 'x:' + (mapPinMainNode.offsetLeft + PIN_WIDTH / 2) + ', y:' + (mapPinMainNode.offsetTop + PIN_HEIGHT + 22));
+addressNode.value = 'x:' + (mapPinMainNode.offsetLeft + PIN_WIDTH / 2) + ', y:' + (mapPinMainNode.offsetTop + PIN_HEIGHT + 22);
 
 
 var closePopup = function () {
@@ -314,15 +316,15 @@ var addPopupCloseHandlers = function () {
 var enableInteractivity = function () {
   mapNode.classList.remove('map--faded');
   noticeFormNode.classList.remove('notice__form--disabled');
-  mapPinMainNode.setAttribute('style', 'z-index: 10');
+  mapPinMainNode.style = 'z-index: 10';
 
   toggleDisabledOnFormNodes(noticeFormNode, false);
   toggleDisabledOnFormNodes(mapFiltersFormNode, false);
   noticeFormNode.removeAttribute('style');
 
   // Оставляет поле адреса визуально неактивным
-  addressNode.setAttribute('style', 'pointer-events:none');
-  addressNode.previousElementSibling.setAttribute('style', 'pointer-events:none');
+  addressNode.style = 'pointer-events:none';
+  addressNode.previousElementSibling.style = 'pointer-events:none';
 
   renderMap();
   addPopupCloseHandlers();
@@ -330,7 +332,7 @@ var enableInteractivity = function () {
 
 // Удаляет обработчик кнопки после того, как он отрабатывает
 var onUserPinEnterPress = function (event) {
-  if (event.keyCode === KEYCODE_ENTER || KEYCODE_SPACE) {
+  if (event.keyCode === KEYCODE_ENTER || event.keyCode === KEYCODE_SPACE) {
     enableInteractivity();
     mapPinMainNode.removeEventListener('mouseup', onUserPinMouseUp);
     mapPinMainNode.removeEventListener('keydown', onUserPinEnterPress);
@@ -372,9 +374,11 @@ var renderPopup = function (offer) {
 
 // Приниммет цель события и элемент, на котором этом событие ловим. Использует всплытие, чтобы поймать нужный элемент и возвращает его.
 var findClosestElem = function (target, elem) {
+  var closestElem;
+
   while (target.className !== mapPinsNode.className) {
     if (target.className === elem) {
-      var closestElem = target;
+      closestElem = target;
     }
     target = target.parentNode;
   }
