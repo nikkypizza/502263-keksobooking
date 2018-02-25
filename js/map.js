@@ -220,8 +220,7 @@ var renderOffer = function (currentOffer) {
 
   // Склоняет слово "гость" в зависимости от количества
   var createGuestPluralName = function () {
-    var guestNoun;
-    guestNoun = currentOffer.offer.guests === 1 ? 'гостя' : 'гостей';
+    var guestNoun = currentOffer.offer.guests === 1 ? 'гостя' : 'гостей';
     return guestNoun;
   };
 
@@ -439,45 +438,43 @@ var syncTypeWithMinPrice = function () {
   priceInputNode.placeholder = MIN_PRICES[selectedType];
 };
 
+/*
+var mapOfRoomsEnabled = {
+  one: [0],
+  two: [0, 1],
+  three: [0, 1, 2],
+  hundred: [3]
+};
+
+var mapOfRooms = {
+  rooms: [0, [0, 1], [0, 1, 2], 3]
+  guests: [1, 2, 3, 100],
+};
+*/
+
 var syncRoomsWithGuests = function () {
   var roomSelectValue = numOfRoomsSelectNode.options[numOfRoomsSelectNode.selectedIndex].value;
-
-  var notForGuestsOption = capacitySelectNode.querySelector('option[value="0"]');
-  var oneGuestsOption = capacitySelectNode.querySelector('option[value="1"]');
-  var twoGuestsOption = capacitySelectNode.querySelector('option[value="2"]');
-  var threeGuestsOption = capacitySelectNode.querySelector('option[value="3"]');
+  var capacitySelectOptions = capacitySelectNode.querySelectorAll('option');
+  toggleDisabledOnFormNodes(capacitySelectOptions, true);
 
   if (roomSelectValue === '1') {
-    oneGuestsOption.selected = true;
-    oneGuestsOption.disabled = false;
-
-    notForGuestsOption.disabled = true;
-    twoGuestsOption.disabled = true;
-    threeGuestsOption.disabled = true;
+    capacitySelectOptions[0].disabled = false;
+    capacitySelectOptions[0].selected = true;
   }
   if (roomSelectValue === '2') {
-    oneGuestsOption.selected = true;
-    oneGuestsOption.disabled = false;
-    twoGuestsOption.disabled = false;
-
-    notForGuestsOption.disabled = true;
-    threeGuestsOption.disabled = true;
+    capacitySelectOptions[0].disabled = false;
+    capacitySelectOptions[1].disabled = false;
+    capacitySelectOptions[1].selected = true;
   }
   if (roomSelectValue === '3') {
-    oneGuestsOption.selected = true;
-    oneGuestsOption.disabled = false;
-    twoGuestsOption.disabled = false;
-    threeGuestsOption.disabled = false;
-
-    notForGuestsOption.disabled = true;
+    capacitySelectOptions[0].disabled = false;
+    capacitySelectOptions[1].disabled = false;
+    capacitySelectOptions[2].disabled = false;
+    capacitySelectOptions[2].selected = true;
   }
   if (roomSelectValue === '100') {
-    notForGuestsOption.selected = true;
-    notForGuestsOption.disabled = false;
-
-    oneGuestsOption.disabled = true;
-    twoGuestsOption.disabled = true;
-    threeGuestsOption.disabled = true;
+    capacitySelectOptions[3].disabled = false;
+    capacitySelectOptions[3].selected = true;
   }
 };
 
