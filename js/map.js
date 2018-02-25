@@ -135,7 +135,7 @@ var getOffersArray = function (quantity) {
       location: {
         x: x,
         y: y
-      },
+      }
     };
     offersArray.push(currentOffer);
   }
@@ -399,3 +399,105 @@ var onOfferPinClick = function (event) {
 };
 
 mapPinsNode.addEventListener('click', onOfferPinClick);
+
+
+var MIN_PRICES = {
+  bungalo: '0',
+  flat: '1000',
+  house: '5000',
+  palace: '10000'
+};
+
+var userFormNode = document.querySelector('.notice__form');
+
+var checkinSelectNode = userFormNode.querySelector('#timein');
+var checkoutSelectNode = userFormNode.querySelector('#timeout');
+
+var typeSelectNode = userFormNode.querySelector('#type');
+var priceInputNode = userFormNode.querySelector('#price');
+
+var numOfRoomsSelectNode = userFormNode.querySelector('#room_number');
+var capacitySelectNode = userFormNode.querySelector('#capacity');
+
+
+// При выборе опции селекта из первого параметра выбирает опцию с аналогичным значением у селекта из второго параметра
+var syncSelectNodesValue = function (changedSelect, syncingSelect) {
+  var selectedValue = changedSelect.options[changedSelect.selectedIndex].value;
+
+  for (var i = 0; i < syncingSelect.length; i += 1) {
+    if (syncingSelect[i].value === selectedValue) {
+      syncingSelect[i].selected = true;
+      break;
+    }
+  }
+};
+
+// Задает минимальную цену за ночь
+var syncTypeWithMinPrice = function () {
+  var selectedType = typeSelectNode.options[typeSelectNode.selectedIndex].value;
+  priceInputNode.min = MIN_PRICES[selectedType];
+  priceInputNode.placeholder = MIN_PRICES[selectedType];
+};
+
+var syncRoomsWithGuests = function () {
+  var roomSelectValue = numOfRoomsSelectNode.options[numOfRoomsSelectNode.selectedIndex].value;
+
+  var notForGuestsOption = capacitySelectNode.querySelector('option[value="0"]');
+  var oneGuestsOption = capacitySelectNode.querySelector('option[value="1"]');
+  var twoGuestsOption = capacitySelectNode.querySelector('option[value="2"]');
+  var threeGuestsOption = capacitySelectNode.querySelector('option[value="3"]');
+
+  if (roomSelectValue === '1') {
+    oneGuestsOption.selected = true;
+    oneGuestsOption.disabled = false;
+
+    notForGuestsOption.disabled = true;
+    twoGuestsOption.disabled = true;
+    threeGuestsOption.disabled = true;
+  }
+  if (roomSelectValue === '2') {
+    oneGuestsOption.selected = true;
+    oneGuestsOption.disabled = false;
+    twoGuestsOption.disabled = false;
+
+    notForGuestsOption.disabled = true;
+    threeGuestsOption.disabled = true;
+  }
+  if (roomSelectValue === '3') {
+    oneGuestsOption.selected = true;
+    oneGuestsOption.disabled = false;
+    twoGuestsOption.disabled = false;
+    threeGuestsOption.disabled = false;
+
+    notForGuestsOption.disabled = true;
+  }
+  if (roomSelectValue === '100') {
+    notForGuestsOption.selected = true;
+    notForGuestsOption.disabled = false;
+
+    oneGuestsOption.disabled = true;
+    twoGuestsOption.disabled = true;
+    threeGuestsOption.disabled = true;
+  }
+};
+
+var onUserFormNodeChange = function (event) {
+  var target = event.target;
+
+  if (target === checkinSelectNode) {
+    syncSelectNodesValue(checkinSelectNode, checkoutSelectNode);
+  }
+  if (target === checkoutSelectNode) {
+    syncSelectNodesValue(checkoutSelectNode, checkinSelectNode);
+  }
+  if (target === typeSelectNode) {
+    syncTypeWithMinPrice();
+  }
+  if (target === numOfRoomsSelectNode) {
+    syncRoomsWithGuests();
+  }
+};
+
+
+syncRoomsWithGuests();
+userFormNode.addEventListener('change', onUserFormNodeChange);
