@@ -31,7 +31,7 @@
     </div>
 
     <div class="map__filters-container">
-      <form action="#" class="map__filters" autocomplete="off">
+      <form action="#" class="map__filters" autocomplete="off" disabled>
         <select name="housing-type" id="housing-type" class="map__filter">
           <option value="any" selected>Любой тип жилья</option>
           <option value="flat">Квартира</option>
@@ -85,7 +85,7 @@
   <div class="notice">
     <h2 class="notice__title">Ваше объявление</h2>
 
-    <form class="notice__form notice__form--disabled" method="post" enctype="multipart/form-data" autocomplete="off">
+    <form class="notice__form notice__form--disabled" action="https://js.dump.academy/keksobooking" method="post" enctype="multipart/form-data" autocomplete="off">
       <fieldset class="notice__header">
         <legend>Ваша фотография (для карты)</legend>
         <div class="notice__photo">
@@ -102,12 +102,12 @@
 
       <fieldset class="form__element form__element--wide">
         <label for="title">Заголовок объявления</label>
-        <input id="title" name="title" type="text" placeholder="Милая, уютная квартирка в центре Токио">
+        <input id="title" name="title" type="text" minlength="30" maxlength="100" placeholder="Милая, уютная квартирка в центре Токио" required>
       </fieldset>
 
       <fieldset class="form__element form__element--wide">
         <label for="address">Адрес</label>
-        <input id="address" name="address" type="text">
+        <input id="address" name="address" type="text" tabindex="-1" readonly>
       </fieldset>
 
       <fieldset class="form__element">
@@ -122,7 +122,7 @@
 
       <fieldset class="form__element">
         <label for="price">Цена за ночь, руб.</label>
-        <input id="price" name="price" type="number" placeholder="5000">
+        <input id="price" name="price" type="number" placeholder="1000" min="1000" max="1000000" step="100" required>
       </fieldset>
 
       <fieldset class="form__element">
@@ -207,7 +207,7 @@
 <footer class="footer container">
   <div class="center-wrapper">
     <section class="footer-logo">
-      Сделано в <a tabindex="1" href="https://htmlacademy.ru/intensive/javascript" class="footer-logo-link"><img src="img/ha-logo.png" class="footer-logo-image" width="130" alt="HTML Academy">HTML Academy</a> &copy; 2018
+      Сделано в <a href="https://htmlacademy.ru/intensive/javascript" class="footer-logo-link"><img src="img/ha-logo.png" class="footer-logo-image" width="130" alt="HTML Academy">HTML Academy</a> &copy; 2018
     </section>
     <nav class="footer-social">
       <a href="https://twitter.com/htmlacademy_ru" class="footer-social-item footer-social-item-twitter" target="_blank" rel="nofollow">Twitter</a>
@@ -219,9 +219,9 @@
 </footer>
 
 <template>
-  <article class="map__card popup">
+  <article class="map__card popup hidden">
     <img src="img/avatars/user01.png" class="popup__avatar" width="70" height="70">
-    <button class="popup__close">Закрыть</button>
+    <button class="popup__close" tabindex="1">Закрыть</button>
     <h3>Уютное гнездышко для молодоженов</h3>
     <p><small>102-0082 Tōkyō-to, Chiyoda-ku, Ichibanchō, 14−3</small></p>
     <p class="popup__price">5200&#x20bd;/ночь</p>
