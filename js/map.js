@@ -438,63 +438,51 @@ var syncTypeWithMinPrice = function () {
   priceInputNode.placeholder = MIN_PRICES[selectedType];
 };
 
-/*
 var mapOfRoomsEnabled = {
-  one: [0],
-  two: [0, 1],
-  three: [0, 1, 2],
-  hundred: [3]
+  1: [0],
+  2: [0, 1],
+  3: [0, 1, 2],
+  100: [3]
 };
 
-var mapOfRooms = {
-  rooms: [0, [0, 1], [0, 1, 2], 3]
-  guests: [1, 2, 3, 100],
-};
-*/
-
-var syncRoomsWithGuests = function () {
+var syncRoomsWithGuests = function (mapSync) {
   var roomSelectValue = numOfRoomsSelectNode.options[numOfRoomsSelectNode.selectedIndex].value;
   var capacitySelectOptions = capacitySelectNode.querySelectorAll('option');
   toggleDisabledOnFormNodes(capacitySelectOptions, true);
+  var enabledValues = mapSync[roomSelectValue];
 
-  if (roomSelectValue === '1') {
-    capacitySelectOptions[0].disabled = false;
-    capacitySelectOptions[0].selected = true;
-  }
-  if (roomSelectValue === '2') {
-    capacitySelectOptions[0].disabled = false;
-    capacitySelectOptions[1].disabled = false;
-    capacitySelectOptions[1].selected = true;
-  }
-  if (roomSelectValue === '3') {
-    capacitySelectOptions[0].disabled = false;
-    capacitySelectOptions[1].disabled = false;
-    capacitySelectOptions[2].disabled = false;
-    capacitySelectOptions[2].selected = true;
-  }
-  if (roomSelectValue === '100') {
-    capacitySelectOptions[3].disabled = false;
-    capacitySelectOptions[3].selected = true;
+  if (enabledValues && enabledValues.length) {
+    enabledValues.forEach(function (optionNumber) {
+      capacitySelectOptions[optionNumber].disabled = false;
+    });
+
+    if (roomSelectValue === '100') {
+      capacitySelectOptions[3].selected = true;
+    } else {
+      capacitySelectOptions[enabledValues.length - 1].selected = true;
+    }
   }
 };
 
 var onUserFormNodeChange = function (event) {
   var target = event.target;
 
-  if (target === checkinSelectNode) {
-    syncSelectNodesValue(checkinSelectNode, checkoutSelectNode);
-  }
-  if (target === checkoutSelectNode) {
-    syncSelectNodesValue(checkoutSelectNode, checkinSelectNode);
-  }
-  if (target === typeSelectNode) {
-    syncTypeWithMinPrice();
-  }
-  if (target === numOfRoomsSelectNode) {
-    syncRoomsWithGuests();
+  switch (target) {
+    case checkinSelectNode:
+      syncSelectNodesValue(checkinSelectNode, checkoutSelectNode);
+      break;
+    case checkoutSelectNode:
+      syncSelectNodesValue(checkoutSelectNode, checkinSelectNode);
+      break;
+    case typeSelectNode:
+      syncTypeWithMinPrice();
+      break;
+    case numOfRoomsSelectNode:
+      syncRoomsWithGuests(mapOfRoomsEnabled);
+      break;
   }
 };
 
 
-syncRoomsWithGuests();
+syncRoomsWithGuests(mapOfRoomsEnabled);
 userFormNode.addEventListener('change', onUserFormNodeChange);
