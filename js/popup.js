@@ -39,7 +39,9 @@
 
     window.form.toggleDisabledOnFormNodes(noticeFormNode, false);
     window.form.toggleDisabledOnFormNodes(mapFiltersFormNode, false);
-    mapPinMainNode.zIndex = '';
+
+    // Возвращает полям формы доступность с мыши
+    noticeFormNode.removeAttribute('style');
 
     // Оставляет поле адреса визуально неактивным
     addressNode.style = 'pointer-events:none';

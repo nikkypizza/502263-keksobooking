@@ -26,7 +26,7 @@
 
     // Возвращает случайный элемент массива
     getRandomElem: function (srcArray) {
-      return srcArray[this.getRandomNumber(0, srcArray.length)];
+      return srcArray[window.utils.getRandomNumber(0, srcArray.length)];
     },
 
     /* Возвращает перемешаный массив
