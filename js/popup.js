@@ -35,7 +35,7 @@
   var enableInteractivity = function () {
     mapNode.classList.remove('map--faded');
     noticeFormNode.classList.remove('notice__form--disabled');
-    mapPinMainNode.zIndex = 10;
+    mapPinMainNode.style.zIndex = 10;
 
     window.form.toggleDisabledOnFormNodes(noticeFormNode, false);
     window.form.toggleDisabledOnFormNodes(mapFiltersFormNode, false);
