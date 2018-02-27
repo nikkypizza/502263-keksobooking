@@ -35,11 +35,11 @@
   var enableInteractivity = function () {
     mapNode.classList.remove('map--faded');
     noticeFormNode.classList.remove('notice__form--disabled');
-    mapPinMainNode.style = 'z-index: 10';
+    mapPinMainNode.zIndex = 10;
 
     window.form.toggleDisabledOnFormNodes(noticeFormNode, false);
     window.form.toggleDisabledOnFormNodes(mapFiltersFormNode, false);
-    noticeFormNode.removeAttribute('style');
+    mapPinMainNode.zIndex = '';
 
     // Оставляет поле адреса визуально неактивным
     addressNode.style = 'pointer-events:none';

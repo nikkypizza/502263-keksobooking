@@ -56,11 +56,14 @@
   var getOffersArray = function (quantity) {
     var offersArray = [];
     var currentOffer;
+
     var shuffleTitles = window.utils.getShuffleArray(ALL_TITLES);
+    var getRandomNumber = window.utils.getRandomNumber;
+    var getRandomElem = window.utils.getRandomElem;
 
     for (var i = 0; i < quantity; i += 1) {
-      var x = window.utils.getRandomNumber(300, 900, true);
-      var y = window.utils.getRandomNumber(150, 500, true);
+      var x = getRandomNumber(300, 900, true);
+      var y = getRandomNumber(150, 500, true);
 
       currentOffer = {
         author: {
@@ -69,12 +72,12 @@
         offer: {
           title: shuffleTitles[i],
           address: 'x:' + x + ', y:' + y,
-          price: window.utils.roundTo100(window.utils.getRandomNumber(1000, 1000000, true)),
-          type: window.utils.getRandomElem(Object.keys(LIST_APARTMENT_TYPES)),
-          rooms: window.utils.getRandomNumber(1, 5, true),
-          guests: window.utils.getRandomNumber(1, 10, true),
-          checkin: window.utils.getRandomElem(LIST_CHECK_IN),
-          checkout: window.utils.getRandomElem(LIST_CHECK_OUT),
+          price: window.utils.roundTo100(getRandomNumber(1000, 1000000, true)),
+          type: getRandomElem(Object.keys(LIST_APARTMENT_TYPES)),
+          rooms: getRandomNumber(1, 5, true),
+          guests: getRandomNumber(1, 10, true),
+          checkin: getRandomElem(LIST_CHECK_IN),
+          checkout: getRandomElem(LIST_CHECK_OUT),
           features: window.utils.getArrayOfRandomLength(FEATURES),
           description: '',
           photos: ALL_PHOTOS
