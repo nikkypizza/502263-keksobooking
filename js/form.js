@@ -12,14 +12,13 @@
   // Отключает все поля формы по умолчанию
   window.popup.noticeFormNode.style = 'pointer-events:none';
 
-  var pinLeft = window.popup.mapPinMainNode.offsetLeft;
-  var pinTop = window.popup.mapPinMainNode.offsetTop;
-  var pinWidth = window.map.PIN_WIDTH;
-  var pinHeight = window.map.PIN_HEIGHT;
+  var PIN_NEEDLE_HEIGHT = 22;
+  var mainPinX = window.popup.mapPinMainNode.offsetLeft + window.map.PIN_WIDTH / 2;
+  var mainPinY = window.popup.mapPinMainNode.offsetTop + window.map.PIN_HEIGHT + PIN_NEEDLE_HEIGHT;
 
   // Добавляет координаты main пина в адресную строку
+  var addressValue = 'x:' + mainPinX + ', y:' + mainPinY;
 
-  var addressValue = 'x:' + (pinLeft + pinWidth / 2) + ', y:' + (pinTop + pinHeight + 22);
   window.popup.addressNode.value = addressValue;
 
 
