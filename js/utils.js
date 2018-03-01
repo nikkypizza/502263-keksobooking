@@ -58,8 +58,8 @@
           right: -dragElemHalfWidth
         },
         y: {
-          top: 100,
-          bottom: 15
+          top: 105,
+          bottom: 34
         }
       };
 

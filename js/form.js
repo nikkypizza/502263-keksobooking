@@ -19,14 +19,14 @@
   };
 
   var PIN_NEEDLE_HEIGHT = 22;
-  var mainPinNeedleX = mapPinMainNodePosition.x + window.map.PIN_WIDTH / 2;
+  var mainPinNeedleX = mapPinMainNodePosition.x;
   var mainPinNeedleY = mapPinMainNodePosition.y + window.map.PIN_HEIGHT + PIN_NEEDLE_HEIGHT;
 
 
   var getPinElemNeedleCoords = function (position) {
     var updatedCoords = {
-      x: position.x + window.map.PIN_WIDTH / 2,
-      y: position.y + window.map.PIN_HEIGHT + PIN_NEEDLE_HEIGHT
+      x: position.x,
+      y: Math.round(position.y + window.map.PIN_HEIGHT + PIN_NEEDLE_HEIGHT)
     };
 
     onCoordsChange(updatedCoords);
