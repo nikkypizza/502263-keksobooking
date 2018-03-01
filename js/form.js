@@ -12,15 +12,36 @@
   // Отключает все поля формы по умолчанию
   window.popup.noticeFormNode.style = 'pointer-events:none';
 
+
+  var mapPinMainNodePosition = {
+    x: window.popup.mapPinMainNode.offsetLeft,
+    y: window.popup.mapPinMainNode.offsetTop
+  };
+
   var PIN_NEEDLE_HEIGHT = 22;
-  var mainPinX = window.popup.mapPinMainNode.offsetLeft + window.map.PIN_WIDTH / 2;
-  var mainPinY = window.popup.mapPinMainNode.offsetTop + window.map.PIN_HEIGHT + PIN_NEEDLE_HEIGHT;
+  var mainPinNeedleX = mapPinMainNodePosition.x + window.map.PIN_WIDTH / 2;
+  var mainPinNeedleY = mapPinMainNodePosition.y + window.map.PIN_HEIGHT + PIN_NEEDLE_HEIGHT;
 
-  // Добавляет координаты main пина в адресную строку
-  var addressValue = 'x:' + mainPinX + ', y:' + mainPinY;
 
+  var getPinElemNeedleCoords = function (position) {
+    var updatedCoords = {
+      x: position.x + window.map.PIN_WIDTH / 2,
+      y: position.y + window.map.PIN_HEIGHT + PIN_NEEDLE_HEIGHT
+    };
+
+    onCoordsChange(updatedCoords);
+  };
+
+  var onCoordsChange = function (coords) {
+    window.popup.addressNode.value = 'x:' + coords.x + ', y:' + coords.y;
+  };
+
+  // Добавляет координаты main пина в адресную строку пока страница в неактивном состоянии
+  var addressValue = 'x:' + mainPinNeedleX + ', y:' + mainPinNeedleY;
   window.popup.addressNode.value = addressValue;
 
+  // Синхронизует координаты пина с адресной строкой, добавляет ограничения перемещения
+  window.utils.enableDragging(window.popup.mapPinMainNode, getPinElemNeedleCoords);
 
   // Добавляет или убирает аттрибут disabled нодам формы
   var toggleDisabledOnFormNodes = function (formElementNodes, isDisabled) {
